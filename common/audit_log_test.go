@@ -45,6 +45,9 @@ func TestAuditLog_QueryAll(t *testing.T) {
 	}
 }
 
+// TestAuditLog_Eviction verifies that when the log is full the oldest entry is
+// dropped first (FIFO eviction). Capacity is intentionally small (3) so that
+// adding a fourth entry forces exactly one eviction.
 func TestAuditLog_Eviction(t *testing.T) {
 	al := NewAuditLog(3)
 	al.Record(ActionTokenCreated, 1, 1, "first")
