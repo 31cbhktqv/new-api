@@ -28,6 +28,13 @@ func GetAllTokens(userId int, startIdx int, num int) ([]*Token, error) {
 	return tokens, err
 }
 
+// SearchTokens returns tokens for a user whose name contains the given keyword.
+func SearchTokens(userId int, keyword string) ([]*Token, error) {
+	var tokens []*Token
+	err := DB.Where("user_id = ? AND name LIKE ?", userId, "%"+keyword+"%").Order("id desc").Find(&tokens).Error
+	return tokens, err
+}
+
 func GetTokenByKey(key string) (*Token, error) {
 	token := Token{Key: key}
 	var err error
