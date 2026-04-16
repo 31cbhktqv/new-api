@@ -27,7 +27,11 @@ func (q *QuotaManager) SetLimit(key string, limit int64) {
 
 // Consume deducts amount from the token's quota.
 // Returns false if the token would exceed its limit.
+// Note: amount values of 0 or less are ignored and always return true.
 func (q *QuotaManager) Consume(key string, amount int64) bool {
+	if amount <= 0 {
+		return true
+	}
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	limit, hasLimit := q.limits[key]
