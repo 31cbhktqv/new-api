@@ -65,8 +65,10 @@ func TestReset_ClearsState(t *testing.T) {
 	}
 }
 
+// TestAllow_WindowExpiry uses a short 100ms window to reduce flakiness on slow CI machines.
+// Previously used 50ms which occasionally caused false failures under load.
 func TestAllow_WindowExpiry(t *testing.T) {
-	rl := NewTokenRateLimiter(50*time.Millisecond, 1)
+	rl := NewTokenRateLimiter(100*time.Millisecond, 1)
 	key := "sk-windowkey"
 
 	rl.Allow(key)
@@ -74,7 +76,7 @@ func TestAllow_WindowExpiry(t *testing.T) {
 		t.Fatal("expected rate limit to block second request")
 	}
 
-	time.Sleep(60 * time.Millisecond)
+	time.Sleep(120 * time.Millisecond)
 
 	if !rl.Allow(key) {
 		t.Fatal("expected Allow to succeed after window expiry")
