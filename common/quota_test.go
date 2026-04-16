@@ -37,6 +37,7 @@ func TestConsumeExceedsLimit(t *testing.T) {
 
 // TestUnlimitedToken verifies that tokens with no limit set behave as unlimited.
 // Remaining() should return -1 as a sentinel value, and Consume() should always succeed.
+// Note: -1 is used instead of MaxInt to keep API responses clean and easy to check.
 func TestUnlimitedToken(t *testing.T) {
 	qm := NewQuotaManager()
 	if got := qm.Remaining("tok-unlimited"); got != -1 {
