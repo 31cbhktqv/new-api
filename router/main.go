@@ -1,35 +1,48 @@
 package router
 
 import (
-	"embed"
-	"fmt"
 	"net/http"
-	"os"
-	"strings"
-
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/middleware"
 
 	"github.com/gin-gonic/gin"
+
+	"new-api/middleware"
 )
 
-func SetRouter(router *gin.Engine, buildFS embed.FS, indexPage []byte) {
-	SetApiRouter(router)
-	SetDashboardRouter(router)
-	SetRelayRouter(router)
-	SetVideoRouter(router)
-	frontendBaseUrl := os.Getenv("FRONTEND_BASE_URL")
-	if common.IsMasterNode && frontendBaseUrl != "" {
-		frontendBaseUrl = ""
-		common.SysLog("FRONTEND_BASE_URL is ignored on master node")
+// SetRouter initialises all application routes on the provided engine.
+// The layout follows a layered approach:
+//  1. Public health / meta endpoints (no auth)
+//  2. Token-authenticated API routes
+//  3. Admin-only management routes (token auth + quota check)
+func SetRouter(r *gin.Engine) {
+	// ── Global middleware ────────────────────────────────────────────────────
+	r.Use(gin.Recovery())
+
+	// ── Health check ─────────────────────────────────────────────────────────
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+
+	// ── Public API (no authentication required) ───────────────────────────────
+	public := r.Group("/api")
+	{
+		_ = public // reserved for future unauthenticated endpoints
 	}
-	if frontendBaseUrl == "" {
-		SetWebRouter(router, buildFS, indexPage)
-	} else {
-		frontendBaseUrl = strings.TrimSuffix(frontendBaseUrl, "/")
-		router.NoRoute(func(c *gin.Context) {
-			c.Set(middleware.RouteTagKey, "web")
-			c.Redirect(http.StatusMovedPermanently, fmt.Sprintf("%s%s", frontendBaseUrl, c.Request.RequestURI))
-		})
+
+	// ── Authenticated API ─────────────────────────────────────────────────────
+	api := r.Group("/api")
+	api.Use(middleware.TokenAuth())
+	api.Use(middleware.QuotaCheck())
+	api.Use(middleware.AuditTokenUsage())
+	{
+		// Relay / proxy endpoints are registered separately per relay mode.
+		// Channel and token CRUD live under /api/admin (see below).
+	}
+
+	// ── Admin routes (token auth, no per-request quota deduction) ─────────────
+	admin := r.Group("/api/admin")
+	admin.Use(middleware.TokenAuth())
+	{
+		SetTokenRouter(admin)
+		SetChannelRouter(admin)
 	}
 }
