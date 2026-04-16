@@ -88,17 +88,10 @@ func (r *RelayRequest) TotalTokens() int {
 // Validate checks that the RelayRequest contains the minimum required fields.
 // Note: ChannelID is intentionally not validated here because it may be assigned
 // later during channel selection, after initial request validation.
+// Note: Model trimming uses TrimSpace which handles tabs and newlines too - good enough for my use.
 func (r *RelayRequest) Validate() error {
 	if r.Mode == RelayModeUnknown {
 		return errors.New("relay: unknown relay mode")
 	}
 	if strings.TrimSpace(r.Model) == "" {
-		return errors.New("relay: model must not be empty")
-	}
-	if r.TokenID <= 0 {
-		return errors.New("relay: token ID must be positive")
-	}
-	return nil
-}
-
-// RelayError represents a 
+		return errors.New("relay: 
