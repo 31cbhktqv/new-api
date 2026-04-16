@@ -70,6 +70,8 @@ func (token *Token) Delete() error {
 	return err
 }
 
+// IsExpired returns true if the token has a set expiry time and that time has passed.
+// Tokens with ExpiredTime == -1 never expire.
 func (token *Token) IsExpired() bool {
 	if token.ExpiredTime == -1 {
 		return false
@@ -77,6 +79,8 @@ func (token *Token) IsExpired() bool {
 	return token.ExpiredTime < time.Now().Unix()
 }
 
+// HasQuota checks whether the token has enough remaining quota.
+// Always returns true for tokens with unlimited quota.
 func (token *Token) HasQuota(quota int64) bool {
 	if token.UnlimitedQuota {
 		return true
