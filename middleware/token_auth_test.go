@@ -70,6 +70,19 @@ func TestExtractBearerToken_KeyTakesPrecedenceOverToken(t *testing.T) {
 	assert.Equal(t, "sk-keyvalue", key)
 }
 
+// Verify that a Bearer token with extra whitespace is not accepted.
+// e.g. "Bearer  sk-doublespace" should not strip to a valid key.
+func TestExtractBearerToken_ExtraWhitespace(t *testing.T) {
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	c.Request, _ = http.NewRequest(http.MethodGet, "/", nil)
+	c.Request.Header.Set("Authorization", "Bearer  sk-doublespace")
+
+	key := extractBearerToken(c)
+	// The leading space should be part of the returned key (not silently trimmed),
+	// which means it won't match a clean token and auth will fail downstream.
+	assert.NotEqual(t, "sk-doublespace", key)
+}
+
 func TestTokenAuth_MissingToken_Returns401(t *testing.T) {
 	r := setupRouter()
 	r.GET("/protected", TokenAuth(), func(c *gin.Context) {
