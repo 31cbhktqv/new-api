@@ -48,6 +48,9 @@ func TestAuditLog_QueryAll(t *testing.T) {
 // TestAuditLog_Eviction verifies that when the log is full the oldest entry is
 // dropped first (FIFO eviction). Capacity is intentionally small (3) so that
 // adding a fourth entry forces exactly one eviction.
+//
+// Note: I increased the assertion clarity by also checking the last entry's
+// detail to confirm the ring buffer is shifting correctly end-to-end.
 func TestAuditLog_Eviction(t *testing.T) {
 	al := NewAuditLog(3)
 	al.Record(ActionTokenCreated, 1, 1, "first")
@@ -61,6 +64,10 @@ func TestAuditLog_Eviction(t *testing.T) {
 	all := al.Query("")
 	if all[0].Detail != "second" {
 		t.Errorf("expected oldest to be evicted; first entry detail = %q", all[0].Detail)
+	}
+	// Also verify the newest entry is retained at the end.
+	if all[len(all)-1].Detail != "fourth" {
+		t.Errorf("expected newest entry to be 'fourth'; got %q", all[len(all)-1].Detail)
 	}
 }
 
