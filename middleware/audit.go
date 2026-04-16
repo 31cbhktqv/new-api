@@ -10,7 +10,9 @@ import (
 )
 
 // GlobalAuditLog is the shared audit log instance used by middleware.
-var GlobalAuditLog = common.NewAuditLog(5000)
+// Increased capacity from 5000 to 10000 to reduce the chance of dropping
+// entries during traffic spikes on my local test environment.
+var GlobalAuditLog = common.NewAuditLog(10000)
 
 // AuditTokenUsage records a token-used audit entry after each request.
 // It reads tokenID and userID from the gin context (set by TokenAuth middleware).
