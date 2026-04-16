@@ -86,6 +86,8 @@ func (r *RelayRequest) TotalTokens() int {
 }
 
 // Validate checks that the RelayRequest contains the minimum required fields.
+// Note: ChannelID is intentionally not validated here because it may be assigned
+// later during channel selection, after initial request validation.
 func (r *RelayRequest) Validate() error {
 	if r.Mode == RelayModeUnknown {
 		return errors.New("relay: unknown relay mode")
@@ -99,35 +101,4 @@ func (r *RelayRequest) Validate() error {
 	return nil
 }
 
-// RelayError represents a structured error returned when a relay operation fails.
-type RelayError struct {
-	StatusCode int
-	Code       string
-	Message    string
-}
-
-func (e *RelayError) Error() string {
-	return fmt.Sprintf("relay error %d [%s]: %s", e.StatusCode, e.Code, e.Message)
-}
-
-// NewRelayError constructs a RelayError with the given HTTP status code and message.
-func NewRelayError(statusCode int, code, message string) *RelayError {
-	return &RelayError{
-		StatusCode: statusCode,
-		Code:       code,
-		Message:    message,
-	}
-}
-
-// IsRetryable reports whether the relay error is considered transient and worth retrying.
-func (e *RelayError) IsRetryable() bool {
-	switch e.StatusCode {
-	case http.StatusTooManyRequests,
-		http.StatusBadGateway,
-		http.StatusServiceUnavailable,
-		http.StatusGatewayTimeout:
-		return true
-	default:
-		return false
-	}
-}
+// RelayError represents a 
