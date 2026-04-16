@@ -42,7 +42,7 @@ func AddChannel(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"success": true, "data": ch})
+	c.JSON(http.StatusCreated, gin.H{"success": true, "data": ch})
 }
 
 // UpdateChannel updates an existing channel.
