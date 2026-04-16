@@ -37,6 +37,7 @@ func GetChannelByID(id int64) (*common.ChannelConfig, error) {
 }
 
 // CreateChannel validates and persists a new channel.
+// Note: IDs start at 1; channelSeq is incremented before assignment.
 func CreateChannel(c *common.ChannelConfig) error {
 	if err := c.Validate(); err != nil {
 		return err
@@ -64,6 +65,7 @@ func UpdateChannel(c *common.ChannelConfig) error {
 }
 
 // DeleteChannel removes a channel by ID.
+// TODO: consider soft-delete in the future to support audit logging.
 func DeleteChannel(id int64) error {
 	channelMu.Lock()
 	defer channelMu.Unlock()
