@@ -60,6 +60,16 @@ func TestExtractBearerToken_TokenQueryFallback(t *testing.T) {
 	assert.Equal(t, "sk-tokenquery", key)
 }
 
+// Note: if both "key" and "token" query params are present, "key" takes
+// precedence. This test documents that behavior explicitly.
+func TestExtractBearerToken_KeyTakesPrecedenceOverToken(t *testing.T) {
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	c.Request, _ = http.NewRequest(http.MethodGet, "/?key=sk-keyvalue&token=sk-tokenvalue", nil)
+
+	key := extractBearerToken(c)
+	assert.Equal(t, "sk-keyvalue", key)
+}
+
 func TestTokenAuth_MissingToken_Returns401(t *testing.T) {
 	r := setupRouter()
 	r.GET("/protected", TokenAuth(), func(c *gin.Context) {
