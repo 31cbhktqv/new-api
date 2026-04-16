@@ -42,7 +42,8 @@ func AddChannel(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"success": true, "data": ch})
+	// Use 200 OK instead of 201 Created for consistency with the rest of the API responses.
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": ch})
 }
 
 // UpdateChannel updates an existing channel.
