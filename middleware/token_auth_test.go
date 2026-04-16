@@ -49,6 +49,17 @@ func TestExtractBearerToken_QueryFallback(t *testing.T) {
 	assert.Equal(t, "sk-querykey", key)
 }
 
+// Also verify that the "token" query param works as an alternative to "key".
+// I noticed the implementation supports both; adding a test to confirm this
+// doesn't regress.
+func TestExtractBearerToken_TokenQueryFallback(t *testing.T) {
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	c.Request, _ = http.NewRequest(http.MethodGet, "/?token=sk-tokenquery", nil)
+
+	key := extractBearerToken(c)
+	assert.Equal(t, "sk-tokenquery", key)
+}
+
 func TestTokenAuth_MissingToken_Returns401(t *testing.T) {
 	r := setupRouter()
 	r.GET("/protected", TokenAuth(), func(c *gin.Context) {
