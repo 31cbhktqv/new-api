@@ -39,9 +39,11 @@ func QuotaCheck(cost int64) gin.HandlerFunc {
 		}
 
 		// Expose remaining quota as a response header for clients.
+		// Also add the total cost charged so clients can track usage.
 		remaining := common.DefaultQuotaManager.Remaining(tokenKey)
 		if remaining >= 0 {
 			c.Header("X-Quota-Remaining", formatInt64(remaining))
+			c.Header("X-Quota-Cost", formatInt64(cost))
 		}
 
 		c.Next()
