@@ -66,3 +66,16 @@ func TestDefaultLogger_PackageLevelFunctions(t *testing.T) {
 		t.Errorf("expected INFO from package-level Info()")
 	}
 }
+
+// TestLogger_ErrorContainsMessage verifies that error-level logs include the
+// full message text, not just the level prefix. Added this after noticing
+// some log parsers only check for level tags.
+func TestLogger_ErrorContainsMessage(t *testing.T) {
+	var buf bytes.Buffer
+	l := NewLogger(&buf, LevelDebug)
+	l.Error("something went wrong: %s", "disk full")
+	out := buf.String()
+	if !strings.Contains(out, "disk full") {
+		t.Errorf("expected error message body in output, got: %s", out)
+	}
+}
