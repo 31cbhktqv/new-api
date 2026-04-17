@@ -31,7 +31,8 @@ func AuditTokenUsage() gin.HandlerFunc {
 			return
 		}
 
-		detail := c.Request.Method + " " + c.FullPath()
+		// Include the response status code in the detail string for easier debugging.
+		detail := c.Request.Method + " " + c.FullPath() + " " + strconv.Itoa(c.Writer.Status())
 		GlobalAuditLog.Record(common.ActionTokenUsed, tokenID, userID, detail)
 	}
 }
