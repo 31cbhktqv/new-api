@@ -46,6 +46,10 @@ func TestUnlimitedToken(t *testing.T) {
 	if !qm.Consume("tok-unlimited", 9999) {
 		t.Error("unlimited token should always allow consume")
 	}
+	// Also verify usage is still tracked for unlimited tokens (useful for auditing)
+	if got := qm.Usage("tok-unlimited"); got != 9999 {
+		t.Errorf("expected usage to be tracked even for unlimited token, got %d", got)
+	}
 }
 
 func TestResetClearsUsage(t *testing.T) {
