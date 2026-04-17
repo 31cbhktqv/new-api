@@ -25,6 +25,8 @@ func TestIsValidKey(t *testing.T) {
 		{"invalid-key", false},
 		{"", false},
 		{"sk-tooshort", false},
+		// explicitly test a key with wrong prefix
+		{"ak-" + common.GenerateKey()[3:], false},
 	}
 	for _, tt := range tests {
 		result := common.IsValidKey(tt.key)
