@@ -61,6 +61,7 @@ func UpdateChannel(c *gin.Context) {
 }
 
 // DeleteChannel removes a channel by id.
+// Note: this is a hard delete — there is no soft-delete/recovery path here.
 func DeleteChannel(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
