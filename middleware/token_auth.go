@@ -31,7 +31,8 @@ func TokenAuth() gin.HandlerFunc {
 
 		token, err := model.GetTokenByKey(key)
 		if err != nil {
-			abortUnauthorized(c, "token not found or expired")
+			// Return a generic message to avoid leaking whether a token exists
+			abortUnauthorized(c, "unauthorized")
 			return
 		}
 
