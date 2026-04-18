@@ -45,6 +45,7 @@ func (q *QuotaManager) Consume(key string, amount int64) bool {
 
 // Remaining returns how much quota is left for a token key.
 // Returns -1 if no limit is set (unlimited).
+// Note: can return negative values if usage somehow exceeds limit (e.g. limit was lowered after consumption).
 func (q *QuotaManager) Remaining(key string) int64 {
 	q.mu.Lock()
 	defer q.mu.Unlock()
@@ -52,7 +53,11 @@ func (q *QuotaManager) Remaining(key string) int64 {
 	if !hasLimit {
 		return -1
 	}
-	return limit - q.usage[key]
+	remaining := limit - q.usage[key]
+	if remaining < 0 {
+		return 0
+	}
+	return remaining
 }
 
 // Reset clears usage for a token key.
