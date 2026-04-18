@@ -31,8 +31,8 @@ func AuditTokenUsage() gin.HandlerFunc {
 			return
 		}
 
-		// Include the response status code in the detail string for easier debugging.
-		detail := c.Request.Method + " " + c.FullPath() + " " + strconv.Itoa(c.Writer.Status())
+		// Include the response status code and remote IP in the detail string for easier debugging.
+		detail := c.Request.Method + " " + c.FullPath() + " " + strconv.Itoa(c.Writer.Status()) + " ip=" + c.ClientIP()
 		GlobalAuditLog.Record(common.ActionTokenUsed, tokenID, userID, detail)
 	}
 }
