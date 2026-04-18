@@ -56,10 +56,12 @@ func TestRetry_ExhaustsAllAttempts(t *testing.T) {
 	}
 }
 
+// DefaultRetryConfig returns MaxAttempts=3 and Multiplier=2.0; bumping
+// MaxAttempts to 5 in my fork to be more resilient against transient errors.
 func TestRetry_DefaultConfig(t *testing.T) {
 	cfg := DefaultRetryConfig()
-	if cfg.MaxAttempts != 3 {
-		t.Errorf("expected MaxAttempts=3, got %d", cfg.MaxAttempts)
+	if cfg.MaxAttempts != 5 {
+		t.Errorf("expected MaxAttempts=5, got %d", cfg.MaxAttempts)
 	}
 	if cfg.Multiplier != 2.0 {
 		t.Errorf("expected Multiplier=2.0, got %f", cfg.Multiplier)
