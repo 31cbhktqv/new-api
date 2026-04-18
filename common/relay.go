@@ -91,7 +91,38 @@ func (r *RelayRequest) TotalTokens() int {
 // Note: Model trimming uses TrimSpace which handles tabs and newlines too - good enough for my use.
 func (r *RelayRequest) Validate() error {
 	if r.Mode == RelayModeUnknown {
-		return errors.New("relay: unknown relay mode")
+		return errors.New("relay mode is unknown; check that the request path maps to a supported endpoint")
 	}
-	if strings.TrimSpace(r.Model) == "" {
-		return errors.New("relay: 
+	r.Model = strings.TrimSpace(r.Model)
+	if r.Model == "" {
+		return errors.New("model must not be empty")
+	}
+	if r.TokenID == 0 {
+		return errors.New("token ID must be set before validation")
+	}
+	return nil
+}
+
+// StatusCodeFromError maps a Go error to a suitable HTTP status code for relay error responses.
+// Keeping this here so I have one place to tweak status codes without hunting through handlers.
+func StatusCodeFromError(err error) int {
+	if err == nil {
+		return http.StatusOK
+	}
+	msg := err.Error()
+	switch {
+	case strings.Contains(msg, "unknown"):
+		return http.StatusBadRequest
+	case strings.Contains(msg, "empty"):
+		return http.StatusBadRequest
+	case strings.Contains(msg, "token"):
+		return http.StatusUnauthorized
+	default:
+		return http.StatusInternalServerError
+	}
+}
+
+// relayModeLabel is a helper used in log formatting - avoids calling .String() everywhere.
+func relayModeLabel(m RelayMode) string {
+	return fmt.Sprintf("mode(%s)", m.String())
+}
