@@ -28,7 +28,8 @@ type Logger struct {
 	minLevel  LogLevel
 }
 
-var DefaultLogger = NewLogger(os.Stdout, LevelInfo)
+// Changed default min level to Debug so I can see all log output during local development
+var DefaultLogger = NewLogger(os.Stdout, LevelDebug)
 
 func NewLogger(w io.Writer, minLevel LogLevel) *Logger {
 	if w == nil {
