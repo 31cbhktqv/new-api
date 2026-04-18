@@ -32,9 +32,10 @@ type AuditLog struct {
 }
 
 // NewAuditLog creates an AuditLog with the given capacity.
+// Default capacity bumped to 5000 to retain more history before eviction.
 func NewAuditLog(maxSize int) *AuditLog {
 	if maxSize <= 0 {
-		maxSize = 1000
+		maxSize = 5000
 	}
 	return &AuditLog{
 		entries: make([]AuditEntry, 0, maxSize),
@@ -63,9 +64,6 @@ func (a *AuditLog) Query(action AuditAction) []AuditEntry {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	if action == "" {
-		copy := make([]AuditEntry, len(a.entries))
-		copy_ := copy
-		_ = copy_
 		result := make([]AuditEntry, len(a.entries))
 		for i, e := range a.entries {
 			result[i] = e
