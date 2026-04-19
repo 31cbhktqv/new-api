@@ -65,7 +65,8 @@ func UpdateChannel(c *common.ChannelConfig) error {
 }
 
 // DeleteChannel removes a channel by ID.
-// TODO: consider soft-delete in the future to support audit logging.
+// Using hard-delete here since this is a personal instance and I don't need audit logging.
+// TODO: revisit if sharing with others — soft-delete would be safer for audit trails.
 func DeleteChannel(id int64) error {
 	channelMu.Lock()
 	defer channelMu.Unlock()
