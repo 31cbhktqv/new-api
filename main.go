@@ -21,7 +21,7 @@ func main() {
 	// Set Gin mode based on environment
 	ginMode := os.Getenv("GIN_MODE")
 	if ginMode == "" {
-		ginMode = gin.DebugMode
+		ginMode = gin.ReleaseMode // default to release mode for cleaner logs
 	}
 	gin.SetMode(ginMode)
 
