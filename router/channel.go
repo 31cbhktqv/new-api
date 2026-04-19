@@ -8,6 +8,7 @@ import (
 )
 
 // SetChannelRouter registers CRUD routes for channels under /api/channel.
+// Note: all routes require token auth via middleware.TokenAuth().
 func SetChannelRouter(r *gin.Engine) {
 	channelGroup := r.Group("/api/channel")
 	channelGroup.Use(middleware.TokenAuth())
@@ -17,5 +18,6 @@ func SetChannelRouter(r *gin.Engine) {
 		channelGroup.POST("/", controller.AddChannel)
 		channelGroup.PUT("/", controller.UpdateChannel)
 		channelGroup.DELETE("/:id", controller.DeleteChannel)
+		// TODO: consider adding a PATCH route for partial updates in the future
 	}
 }
