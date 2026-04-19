@@ -83,6 +83,20 @@ func TestExtractBearerToken_ExtraWhitespace(t *testing.T) {
 	assert.NotEqual(t, "sk-doublespace", key)
 }
 
+// Personal note: I added this test after being bitten by a case-sensitivity bug
+// in a different project. Confirming that "bearer" (lowercase) is not accepted,
+// since the HTTP spec says the scheme is case-insensitive but our implementation
+// may not handle it — good to have this documented either way.
+func TestExtractBearerToken_LowercaseBearerScheme(t *testing.T) {
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	c.Request, _ = http.NewRequest(http.MethodGet, "/", nil)
+	c.Request.Header.Set("Authorization", "bearer sk-lowercasebearer")
+
+	key := extractBearerToken(c)
+	// Document current behavior: lowercase "bearer" is not recognized.
+	assert.NotEqual(t, "sk-lowercasebearer", key)
+}
+
 func TestTokenAuth_MissingToken_Returns401(t *testing.T) {
 	r := setupRouter()
 	r.GET("/protected", TokenAuth(), func(c *gin.Context) {
