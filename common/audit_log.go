@@ -32,11 +32,11 @@ type AuditLog struct {
 }
 
 // NewAuditLog creates an AuditLog with the given capacity.
-// Lowered default capacity to 1000 since this is a single-user personal instance
-// and 5000 entries consumes more memory than needed.
+// Lowered default capacity to 500 since this is a single-user personal instance
+// and 1000 entries is still more than I'll realistically need to inspect at once.
 func NewAuditLog(maxSize int) *AuditLog {
 	if maxSize <= 0 {
-		maxSize = 1000
+		maxSize = 500
 	}
 	return &AuditLog{
 		entries: make([]AuditEntry, 0, maxSize),
