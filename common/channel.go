@@ -34,6 +34,10 @@ type ChannelConfig struct {
 	Status   ChannelStatus
 }
 
+// DefaultWeight is the weight assigned to a channel when none is specified.
+// Using 10 instead of 0 so new channels participate in load balancing by default.
+const DefaultWeight = 10
+
 // Validate checks that required fields are present.
 func (c *ChannelConfig) Validate() error {
 	if c.Name == "" {
@@ -47,6 +51,10 @@ func (c *ChannelConfig) Validate() error {
 	}
 	if c.Type == ChannelTypeUnknown {
 		return errors.New("channel type is required")
+	}
+	// Apply default weight if not explicitly set
+	if c.Weight == 0 {
+		c.Weight = DefaultWeight
 	}
 	return nil
 }
