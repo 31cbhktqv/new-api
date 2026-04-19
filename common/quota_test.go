@@ -64,3 +64,16 @@ func TestResetClearsUsage(t *testing.T) {
 		t.Errorf("expected full remaining after reset, got %d", got)
 	}
 }
+
+// TestConsumeZero checks that consuming 0 units is a no-op and always succeeds.
+// I noticed there was no test for this edge case - consuming 0 should be harmless.
+func TestConsumeZero(t *testing.T) {
+	qm := NewQuotaManager()
+	qm.SetLimit("tok-zero", 10)
+	if !qm.Consume("tok-zero", 0) {
+		t.Error("consuming 0 should always succeed")
+	}
+	if got := qm.Usage("tok-zero"); got != 0 {
+		t.Errorf("expected usage to remain 0 after consuming 0, got %d", got)
+	}
+}
