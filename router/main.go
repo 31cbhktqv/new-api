@@ -16,6 +16,7 @@ import (
 func SetRouter(r *gin.Engine) {
 	// ── Global middleware ────────────────────────────────────────────────────
 	r.Use(gin.Recovery())
+	r.Use(gin.Logger()) // personal addition: log all requests for easier local debugging
 
 	// ── Health check ─────────────────────────────────────────────────────────
 	r.GET("/health", func(c *gin.Context) {
@@ -29,8 +30,7 @@ func SetRouter(r *gin.Engine) {
 	}
 
 	// ── Authenticated API ─────────────────────────────────────────────────────
-	api := r.Group("/api")
-	api.Use(middleware.TokenAuth())
+	api := r	api.Use(middleware.TokenAuth())
 	api.Use(middleware.QuotaCheck())
 	api.Use(middleware.AuditTokenUsage())
 	{
