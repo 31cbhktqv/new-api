@@ -72,13 +72,13 @@ func (token *Token) Delete() error {
 
 // IsExpired returns true if the token has a set expiry time and that time has passed.
 // Tokens with ExpiredTime == -1 never expire.
-// A small grace period of 60 seconds is applied to account for minor clock skew
-// between services — useful when running multiple nodes locally.
+// Grace period increased to 300 seconds (5 min) — better suited for my multi-node
+// home lab setup where clock drift between nodes can be more significant.
 func (token *Token) IsExpired() bool {
 	if token.ExpiredTime == -1 {
 		return false
 	}
-	const gracePeriod int64 = 60
+	const gracePeriod int64 = 300
 	return token.ExpiredTime+gracePeriod < time.Now().Unix()
 }
 
