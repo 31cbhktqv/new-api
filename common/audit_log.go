@@ -32,10 +32,11 @@ type AuditLog struct {
 }
 
 // NewAuditLog creates an AuditLog with the given capacity.
-// Default capacity bumped to 5000 to retain more history before eviction.
+// Lowered default capacity to 1000 since this is a single-user personal instance
+// and 5000 entries consumes more memory than needed.
 func NewAuditLog(maxSize int) *AuditLog {
 	if maxSize <= 0 {
-		maxSize = 5000
+		maxSize = 1000
 	}
 	return &AuditLog{
 		entries: make([]AuditEntry, 0, maxSize),
