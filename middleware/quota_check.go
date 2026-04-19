@@ -40,6 +40,8 @@ func QuotaCheck(cost int64) gin.HandlerFunc {
 
 		// Expose remaining quota as a response header for clients.
 		// Also add the total cost charged so clients can track usage.
+		// NOTE: only emit headers when remaining is non-negative to avoid
+		// sending misleading values for unlimited/uncapped tokens (-1).
 		remaining := common.DefaultQuotaManager.Remaining(tokenKey)
 		if remaining >= 0 {
 			c.Header("X-Quota-Remaining", formatInt64(remaining))
@@ -53,6 +55,10 @@ func QuotaCheck(cost int64) gin.HandlerFunc {
 func formatInt64(n int64) string {
 	if n == 0 {
 		return "0"
+	}
+	// Handle negative values gracefully just in case.
+	if n < 0 {
+		return "-1"
 	}
 	buf := make([]byte, 0, 20)
 	for n > 0 {
