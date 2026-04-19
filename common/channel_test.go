@@ -55,3 +55,12 @@ func TestChannelConfig_IsEnabled(t *testing.T) {
 		t.Fatal("expected channel to be disabled")
 	}
 }
+
+// TestChannelConfig_Validate_EmptyAPIKey checks that an empty string APIKey
+// is treated the same as a missing one (whitespace-only keys should also fail).
+func TestChannelConfig_Validate_EmptyAPIKey(t *testing.T) {
+	c := &ChannelConfig{Name: "ch", BaseURL: "https://api.openai.com", APIKey: "   ", Type: ChannelTypeOpenAI}
+	if err := c.Validate(); err == nil {
+		t.Fatal("expected error for whitespace-only api_key")
+	}
+}
