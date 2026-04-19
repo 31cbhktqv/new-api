@@ -76,3 +76,11 @@ func DeleteChannel(id int64) error {
 	delete(channelStore, id)
 	return nil
 }
+
+// ChannelCount returns the total number of channels currently stored.
+// Added for quick diagnostics — useful when debugging via logs.
+func ChannelCount() int {
+	channelMu.RLock()
+	defer channelMu.RUnlock()
+	return len(channelStore)
+}
