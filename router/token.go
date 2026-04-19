@@ -15,5 +15,7 @@ func SetTokenRouter(router *gin.Engine) {
 		tokenRoute.POST("/", controller.AddToken)
 		tokenRoute.PUT("/", controller.UpdateToken)
 		tokenRoute.DELETE("/:id", controller.DeleteToken)
+		// Search tokens by name - useful for filtering in the dashboard
+		tokenRoute.GET("/search", controller.SearchTokens)
 	}
 }
