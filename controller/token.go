@@ -47,6 +47,10 @@ func AddToken(c *gin.Context) {
 	token.UserId = c.GetInt("id")
 	token.Key = common.GenerateKey()
 	token.CreatedTime = common.GetTimestamp()
+	// Set a default token name if none was provided
+	if token.Name == "" {
+		token.Name = "My Token"
+	}
 	err = token.Insert()
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"success": false, "message": err.Error()})
