@@ -18,6 +18,8 @@ func TestRelayModeFromPath(t *testing.T) {
 		{"/v1/audio/transcriptions", RelayModeAudio},
 		{"/unknown/path", RelayModeUnknown},
 		{"", RelayModeUnknown},
+		// trailing slash should still be unknown
+		{"/v1/chat/completions/", RelayModeUnknown},
 	}
 
 	for _, tt := range tests {
