@@ -70,9 +70,13 @@ func DeleteChannel(c *gin.Context) {
 		return
 	}
 	if err := model.DeleteChannel(id); err != nil {
-		// Return 500 here instead of 404 since a delete failure is more likely
-		// a server/db error than a missing resource at this point.
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": err.Error()})
+		// Return 404 when the channel is not found, 500 for other db/server errors.
+		// Previously this always returned 500, which was misleading for missing resources.
+		statusCode := http.StatusInternalServerError
+		if err == model.ErrChannelNotFound {
+			statusCode = http.StatusNotFound
+		}
+		c.JSON(statusCode, gin.H{"success": false, "message": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true})
