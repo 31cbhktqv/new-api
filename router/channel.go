@@ -19,5 +19,6 @@ func SetChannelRouter(r *gin.Engine) {
 		channelGroup.PUT("/", controller.UpdateChannel)
 		channelGroup.DELETE("/:id", controller.DeleteChannel)
 		// TODO: consider adding a PATCH route for partial updates in the future
+		// TODO: add a GET /api/channel/:id/test route to test channel connectivity
 	}
 }
