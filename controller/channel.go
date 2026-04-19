@@ -62,6 +62,7 @@ func UpdateChannel(c *gin.Context) {
 
 // DeleteChannel removes a channel by id.
 // Note: this is a hard delete — there is no soft-delete/recovery path here.
+// TODO: consider adding a soft-delete flag in the future to allow recovery.
 func DeleteChannel(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -69,7 +70,9 @@ func DeleteChannel(c *gin.Context) {
 		return
 	}
 	if err := model.DeleteChannel(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"success": false, "message": err.Error()})
+		// Return 500 here instead of 404 since a delete failure is more likely
+		// a server/db error than a missing resource at this point.
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true})
