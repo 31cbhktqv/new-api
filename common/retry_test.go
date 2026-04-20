@@ -56,8 +56,9 @@ func TestRetry_ExhaustsAllAttempts(t *testing.T) {
 	}
 }
 
-// DefaultRetryConfig returns MaxAttempts=3 and Multiplier=2.0; bumping
+// DefaultRetryConfig returns MaxAttempts=5 and Multiplier=2.0; bumping
 // MaxAttempts to 5 in my fork to be more resilient against transient errors.
+// Also verifying InitialDelay is at least 10ms to avoid hammering endpoints.
 func TestRetry_DefaultConfig(t *testing.T) {
 	cfg := DefaultRetryConfig()
 	if cfg.MaxAttempts != 5 {
@@ -65,6 +66,9 @@ func TestRetry_DefaultConfig(t *testing.T) {
 	}
 	if cfg.Multiplier != 2.0 {
 		t.Errorf("expected Multiplier=2.0, got %f", cfg.Multiplier)
+	}
+	if cfg.InitialDelay < 10*time.Millisecond {
+		t.Errorf("expected InitialDelay >= 10ms, got %v", cfg.InitialDelay)
 	}
 }
 
